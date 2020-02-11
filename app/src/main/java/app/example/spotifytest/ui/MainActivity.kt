@@ -1,15 +1,17 @@
-package app.example.spotifytest
+package app.example.spotifytest.ui
 
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import app.example.spotifytest.BuildConfig
+import app.example.spotifytest.R
 import app.example.spotifytest.adapter.PlaylistAdapter
 import app.example.spotifytest.api.UserApi
 import app.example.spotifytest.data.UserModel
@@ -168,10 +170,14 @@ class MainActivity : AppCompatActivity() {
                 AuthenticationResponse.Type.ERROR ->{
                     Log.d(TAG, resultCode.toString())
                     Log.d(TAG, response.toString())
+                    somethingWentWrong.visibility = VISIBLE
+                    recyclerViewPlaylist.visibility = GONE
                     Toast.makeText(applicationContext, resources.getString(R.string.failed_in_the_server), Toast.LENGTH_LONG).show()
                 }
                 else -> {
                     Log.d(TAG, "$response")
+                    somethingWentWrong.visibility = VISIBLE
+                    recyclerViewPlaylist.visibility = GONE
                     Toast.makeText(applicationContext, resources.getString(R.string.failed_in_the_server), Toast.LENGTH_LONG).show()
                 }
             }
@@ -223,6 +229,8 @@ class MainActivity : AppCompatActivity() {
         callUserModel.enqueue( object : Callback<UserModel>{
             override fun onFailure(call: Call<UserModel>, t: Throwable) {
                 Log.d(TAG, "<<>>> $t")
+                somethingWentWrong.visibility = VISIBLE
+                recyclerViewPlaylist.visibility = GONE
                 Toast.makeText(applicationContext, resources.getString(R.string.failed_in_the_server), Toast.LENGTH_LONG).show()
             }
 
@@ -242,14 +250,22 @@ class MainActivity : AppCompatActivity() {
                         }
                         401 -> {
                             Log.d(TAG, "Unauthorized")
+                            somethingWentWrong.visibility = VISIBLE
+                            recyclerViewPlaylist.visibility = GONE
                             Toast.makeText(applicationContext, "The request requires user authentication", Toast.LENGTH_SHORT).show()
                         }
                         403 ->{
                             Log.d(TAG, "Forbidden")
-                            Toast.makeText(applicationContext, resources.getString(R.string.failed_in_the_server), Toast.LENGTH_LONG).show()
+                            somethingWentWrong.visibility = VISIBLE
+                            recyclerViewPlaylist.visibility = GONE
+                            Toast.makeText(applicationContext, resources.getString(
+                                R.string.failed_in_the_server
+                            ), Toast.LENGTH_LONG).show()
                         }
                     }
                 }else{
+                    somethingWentWrong.visibility = VISIBLE
+                    recyclerViewPlaylist.visibility = GONE
                     Toast.makeText(applicationContext, resources.getString(R.string.failed_in_the_server), Toast.LENGTH_LONG).show()
                 }
             }
@@ -260,14 +276,20 @@ class MainActivity : AppCompatActivity() {
         val callUserModel = userApi.getUserPlaylist(BuildConfig.USER_ID)
         callUserModel.enqueue( object : Callback<UserPlaylistModel>{
             override fun onFailure(call: Call<UserPlaylistModel>, t: Throwable) {
+                somethingWentWrong.visibility = VISIBLE
+                recyclerViewPlaylist.visibility = GONE
                 Toast.makeText(applicationContext, resources.getString(R.string.failed_in_the_server), Toast.LENGTH_LONG).show()
             }
 
             override fun onResponse(call: Call<UserPlaylistModel>, response: Response<UserPlaylistModel>) {
+                somethingWentWrong.visibility = GONE
+                recyclerViewPlaylist.visibility = VISIBLE
                 recyclerViewPlaylist.layoutManager = LinearLayoutManager(applicationContext)
                 recyclerViewPlaylist.setHasFixedSize(true)
                 val itemDecoration = DividerItemDecoration(applicationContext, DividerItemDecoration.VERTICAL)
-                itemDecoration.setDrawable(ContextCompat.getDrawable(applicationContext, R.drawable.item_decorator)!!)
+                itemDecoration.setDrawable(ContextCompat.getDrawable(applicationContext,
+                    R.drawable.item_decorator
+                )!!)
 
                 recyclerViewPlaylist.addItemDecoration(itemDecoration)
 
@@ -281,15 +303,23 @@ class MainActivity : AppCompatActivity() {
                         }
                         401 -> {
                             Log.d(TAG, "Unauthorized")
+                            somethingWentWrong.visibility = VISIBLE
+                            recyclerViewPlaylist.visibility = GONE
                             Toast.makeText(applicationContext, "The request requires user authentication", Toast.LENGTH_SHORT).show()
                         }
                         403 ->{
                             Log.d(TAG, "Forbidden")
-                            Toast.makeText(applicationContext, resources.getString(R.string.failed_in_the_server), Toast.LENGTH_LONG).show()
+                            somethingWentWrong.visibility = VISIBLE
+                            recyclerViewPlaylist.visibility = GONE
+                            Toast.makeText(applicationContext, resources.getString(
+                                R.string.failed_in_the_server
+                            ), Toast.LENGTH_LONG).show()
                         }
                     }
                 }else{
                     Log.d(TAG, "$response")
+                    somethingWentWrong.visibility = VISIBLE
+                    recyclerViewPlaylist.visibility = GONE
                     Toast.makeText(applicationContext, resources.getString(R.string.failed_in_the_server), Toast.LENGTH_LONG).show()
                 }
             }
@@ -301,7 +331,7 @@ class MainActivity : AppCompatActivity() {
     //<editor-fold desc="Constructor">
 
     companion object {
-        const val TOKEN_ID = "BQDb528CCfJtPFDvssYDg72OaKxnWgMPFO_iY8dw02fJ3PZwbapJVZDCoU_SW0sfxr2BrS_ff23JIudV4ZmZRaj7qvZWYxX55o9UgrLtP4L89yL6ikH0YAg5jgrCCpdTY9quDE1Ge-YAsLkcFwdbz6QLZg6YTsYX3Qbr84z0dwe-YDOJfcUtkioNl61AS-JFtHcqzPOJ8zDEmYNzTxJYXYdDm6ViWj2eZ9fj5rrCov2aGxPGjf4BB17M5273dC2ot-JtLjhrRFF1E_gh_RTZ2Qn3iYUKu1FWjA"
+        const val TOKEN_ID = "BQCTc_lV-ErHl_CJh2Se9Y86QksOQz0Q3QKCTv0bLw5veKS0VlQjd7cIHOs__B9pt6yGmSqySjHkbaC-AvsNF4MlHAkrZ4taif_4Amsce2Qv4fUurXqXRcjg3LIEsIxk5ZegNwl2A2m91erf8mtqp8fFhELffoSinnP0NMQjduLDKyefhxs65KG2X4fa3Tx5BDpdOAOGMau3de0R6Z5h2exSzEPoUDKLUPgrkbrv2-UrMy8F8Q83T9oYu_9DgLCgNo0ovyOAsOnteBRnpTpTR3_0bQoLKfK10A"
     }
 
     //</editor-fold>

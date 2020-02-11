@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Spotify Test</string>
     <string name="failed_in_the_server">We have a problem in the server, please try later.</string>
+    <string name="something_went_wrong">Something went wrong, please try later.</string>
     <string name="playlist">Playlist</string>
+    <string name="ops">Ooops!</string>
 </resources>

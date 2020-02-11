@@ -1,6 +1,6 @@
 package app.example.spotifytest.api
 
-import app.example.spotifytest.MainActivity
+import app.example.spotifytest.ui.MainActivity
 import app.example.spotifytest.data.UserModel
 import app.example.spotifytest.data.UserPlaylistModel
 import app.example.spotifytest.data.UserTracksFromPlaylist

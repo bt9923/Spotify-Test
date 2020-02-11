@@ -13,7 +13,7 @@ data class UserTracksFromPlaylist(
     val primary_color: Any,
     val `public`: Boolean,
     val snapshot_id: String,
-    val tracks: Tracks,
+    val tracks: TracksItem,
     val type: String,
     val uri: String
 )
@@ -46,24 +46,24 @@ data class ExternalUrlsX(
     val spotify: String
 )
 
-//data class Tracks(
-//    val href: String,
-//    val items: List<Item>,
-//    val limit: Int,
-//    val next: Any,
-//    val offset: Int,
-//    val previous: Any,
-//    val total: Int
-//)
-//
-//data class Item(
-//    val added_at: String,
-//    val added_by: AddedBy,
-//    val is_local: Boolean,
-//    val primary_color: Any,
-//    val track: Track,
-//    val video_thumbnail: VideoThumbnail
-//)
+data class TracksItem(
+    val href: String,
+    val items: List<ItemTrack>,
+    val limit: Int,
+    val next: Any,
+    val offset: Int,
+    val previous: Any,
+    val total: Int
+)
+
+data class ItemTrack(
+    val added_at: String,
+    val added_by: AddedBy,
+    val is_local: Boolean,
+    val primary_color: Any,
+    val track: Track,
+    val video_thumbnail: VideoThumbnail
+)
 
 data class AddedBy(
     val external_urls: ExternalUrlsXX,
