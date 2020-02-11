@@ -5,8 +5,11 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import app.example.spotifytest.adapter.PlaylistAdapter
 import app.example.spotifytest.api.UserApi
 import app.example.spotifytest.data.UserModel
@@ -30,10 +33,7 @@ class MainActivity : AppCompatActivity() {
 
     private val REQUEST_CODE = 1337
     private val TAG = "MainActivity"
-//    private val USER_ID = "wvvp8pg3f5rxtzxc9i7iscawo"
-    private val USER_ID = "wizzler"
-    private val CLIENT_ID = "03f40f0ce41748fb97637f2ddd707b36"
-    private val REDIRECT_URI = "http://app.example.spotifytest/callback/"
+//    private val USER_ID = "wizzler"
     private var mSpotifyAppRemote: SpotifyAppRemote? = null
 
     //</editor-fold>
@@ -205,9 +205,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun getAuthenticationRequest(type: AuthenticationResponse.Type): AuthenticationRequest {
         return AuthenticationRequest.Builder(
-            CLIENT_ID,
+            BuildConfig.CLIENT_ID,
             type,
-            REDIRECT_URI
+            BuildConfig.REDIRECT_URI
         )
             .setShowDialog(false)
             .setScopes(arrayOf("user-read-email"))
@@ -219,10 +219,10 @@ class MainActivity : AppCompatActivity() {
     //<editor-fold desc="API">
 
     private fun getUserProfileData(userApi: UserApi) {
-        val callUserModel = userApi.getUserData(USER_ID)
+        val callUserModel = userApi.getUserData(BuildConfig.USER_ID)
         callUserModel.enqueue( object : Callback<UserModel>{
             override fun onFailure(call: Call<UserModel>, t: Throwable) {
-                Log.d(TAG, t.toString())
+                Log.d(TAG, "<<>>> $t")
                 Toast.makeText(applicationContext, resources.getString(R.string.failed_in_the_server), Toast.LENGTH_LONG).show()
             }
 
@@ -257,15 +257,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getUserPlayList(userApi: UserApi) {
-        val callUserModel = userApi.getUserPlaylist(USER_ID)
-
+        val callUserModel = userApi.getUserPlaylist(BuildConfig.USER_ID)
         callUserModel.enqueue( object : Callback<UserPlaylistModel>{
             override fun onFailure(call: Call<UserPlaylistModel>, t: Throwable) {
                 Toast.makeText(applicationContext, resources.getString(R.string.failed_in_the_server), Toast.LENGTH_LONG).show()
             }
 
             override fun onResponse(call: Call<UserPlaylistModel>, response: Response<UserPlaylistModel>) {
-                recyclerViewPlaylist.layoutManager = GridLayoutManager(applicationContext, 2)
+                recyclerViewPlaylist.layoutManager = LinearLayoutManager(applicationContext)
+                recyclerViewPlaylist.setHasFixedSize(true)
+                val itemDecoration = DividerItemDecoration(applicationContext, DividerItemDecoration.VERTICAL)
+                itemDecoration.setDrawable(ContextCompat.getDrawable(applicationContext, R.drawable.item_decorator)!!)
+
+                recyclerViewPlaylist.addItemDecoration(itemDecoration)
 
                 if (response.isSuccessful) {
                     when (response.code()) {
@@ -290,7 +294,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-
     }
 
     //</editor-fold>
@@ -298,7 +301,7 @@ class MainActivity : AppCompatActivity() {
     //<editor-fold desc="Constructor">
 
     companion object {
-        const val TOKEN_ID = "BQBgs4SjjrmeJuozXdo10CZtvMm4eSza4hwqe9Xy_cGliGerLd7x6NsNq6w7MgBeJi0KFUjZxuhA8UIjWgOdos-ZXGvwVHXynR0fot2g9sUFH3Q9XVgml_xks5K6dxCoReJXJpVg8Yyc4fGNdUwTPeXFXZRxMAu1PiwizRfRAlKqsAsqxDs4dUpOsJp92qCESJB-d9o3rHwzOaQoIzi8GpPG42lvgAyMKuBh-iqhsyxkysGFJ7jiePSxvHitv9haoFJmQnX7H1ew4YB8SVtP_IpZ2cwyg0buuA"
+        const val TOKEN_ID = "BQDb528CCfJtPFDvssYDg72OaKxnWgMPFO_iY8dw02fJ3PZwbapJVZDCoU_SW0sfxr2BrS_ff23JIudV4ZmZRaj7qvZWYxX55o9UgrLtP4L89yL6ikH0YAg5jgrCCpdTY9quDE1Ge-YAsLkcFwdbz6QLZg6YTsYX3Qbr84z0dwe-YDOJfcUtkioNl61AS-JFtHcqzPOJ8zDEmYNzTxJYXYdDm6ViWj2eZ9fj5rrCov2aGxPGjf4BB17M5273dC2ot-JtLjhrRFF1E_gh_RTZ2Qn3iYUKu1FWjA"
     }
 
     //</editor-fold>

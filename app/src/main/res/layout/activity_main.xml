@@ -47,12 +47,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginTop="24dp"
             android:fontFamily="@font/montserrat_light"
             android:text="1000+"
             android:textColor="@android:color/white"
-            android:textSize="@dimen/description_size"
+            android:textSize="@dimen/title_size"
             app:layout_constraintStart_toEndOf="@+id/wallet"
             app:layout_constraintTop_toBottomOf="@+id/textViewName"
             tools:targetApi="jelly_bean" />
@@ -94,7 +93,7 @@
             android:layout_marginTop="16dp"
             android:text="@string/playlist"
             android:textColor="@android:color/white"
-            android:textSize="@dimen/description_size"
+            android:textSize="@dimen/title_size"
             android:fontFamily="@font/montserrat_semibold"
             app:layout_constraintStart_toStartOf="@+id/guideline16"
             app:layout_constraintTop_toTopOf="@+id/guideline19"
@@ -137,12 +136,12 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.98" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.29138166" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.29138166" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

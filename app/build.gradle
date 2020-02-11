@@ -25,6 +25,17 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    buildTypes.each {
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file("local.properties").newDataInputStream())
+        def redirect_url = properties.getProperty("REDIRECT_URI", '"http://app.example.spotifytest/callback/"')
+        def client_id = properties.getProperty("CLIENT_ID", '"03f40f0ce41748fb97637f2ddd707b36"')
+        def user_id = properties.getProperty("CLIENT_ID", '"wvvp8pg3f5rxtzxc9i7iscawo"')
+        it.buildConfigField 'String', "REDIRECT_URI", redirect_url
+        it.buildConfigField 'String', "CLIENT_ID", client_id
+        it.buildConfigField 'String', "USER_ID", user_id
+    }
 }
 
 dependencies {

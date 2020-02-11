@@ -25,6 +25,7 @@ data class Item(
     val uri: String
 )
 data class Owner(
+    val display_name: String,
     val external_urls: ExternalUrls,
     val href: String,
     val id: String,
