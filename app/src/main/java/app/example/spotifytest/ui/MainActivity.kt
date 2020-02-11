@@ -11,12 +11,16 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.example.spotifytest.BuildConfig
+import app.example.spotifytest.BuildConfig.CLIENT_ID
+import app.example.spotifytest.BuildConfig.REDIRECT_URI
 import app.example.spotifytest.R
 import app.example.spotifytest.adapter.PlaylistAdapter
 import app.example.spotifytest.api.UserApi
 import app.example.spotifytest.data.UserModel
 import app.example.spotifytest.data.UserPlaylistModel
 import com.bumptech.glide.Glide
+import com.spotify.android.appremote.api.ConnectionParams
+import com.spotify.android.appremote.api.Connector
 import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.sdk.android.authentication.AuthenticationClient
 import com.spotify.sdk.android.authentication.AuthenticationRequest
@@ -62,30 +66,30 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-//        val connectionParams = ConnectionParams.Builder(CLIENT_ID)
-//            .setRedirectUri(REDIRECT_URI)
-//            .showAuthView(true)
-//            .build()
-//
-//        SpotifyAppRemote.connect(this, connectionParams,
-//            object : ConnectionListener {
-//
-//                override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
-//                    mSpotifyAppRemote = spotifyAppRemote
-//                    Log.d("MainActivity", "Connected! Yay!" )
-//
-//                    // Now you can start interacting with App Remote
-//                    connected()
-//
-//                }
-//
-//                override fun onFailure(throwable: Throwable) {
-//                    Log.e("MainActivity", throwable.message, throwable)
-//                    // Something went wrong when attempting to connect! Handle errors here
-//
-//                    Toast.makeText(applicationContext, "Be sure to have and log-in in Spotify", Toast.LENGTH_SHORT).show()
-//                }
-//            })
+        val connectionParams = ConnectionParams.Builder(CLIENT_ID)
+            .setRedirectUri(REDIRECT_URI)
+            .showAuthView(true)
+            .build()
+
+        SpotifyAppRemote.connect(this, connectionParams,
+            object : Connector.ConnectionListener {
+
+                override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
+                    mSpotifyAppRemote = spotifyAppRemote
+                    Log.d("MainActivity", "Connected! Yay!" )
+
+                    // Now you can start interacting with App Remote
+                    connected()
+
+                }
+
+                override fun onFailure(throwable: Throwable) {
+                    Log.e("MainActivity", throwable.message, throwable)
+                    // Something went wrong when attempting to connect! Handle errors here
+
+                    Toast.makeText(applicationContext, "Be sure to have and log-in in Spotify", Toast.LENGTH_SHORT).show()
+                }
+            })
 
 
 //        val builder = AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN,
@@ -196,7 +200,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun connected() {
         // Play a playlist
-//        mSpotifyAppRemote?.playerApi?.play("spotify:playlist:37i9dQZF1DX4sWSpwq3LiO")
+        mSpotifyAppRemote?.playerApi?.play("spotify:playlist:37i9dQZF1DXcBWIGoYBM5M")
+
 
 //        mSpotifyAppRemote?.playerApi?.pause()
         // Subscribe to PlayerState
@@ -205,6 +210,7 @@ class MainActivity : AppCompatActivity() {
             setEventCallback { playerState ->
                 val track = playerState.track
                 if (track != null) {
+                    Toast.makeText(applicationContext, "You are listening ${track.name}", Toast.LENGTH_SHORT).show()
                     Log.d("MainActivity", track.name + " by " + track.artist.name)
                 }
             }
@@ -332,7 +338,7 @@ class MainActivity : AppCompatActivity() {
     //<editor-fold desc="Constructor">
 
     companion object {
-        const val TOKEN_ID = "BQCTc_lV-ErHl_CJh2Se9Y86QksOQz0Q3QKCTv0bLw5veKS0VlQjd7cIHOs__B9pt6yGmSqySjHkbaC-AvsNF4MlHAkrZ4taif_4Amsce2Qv4fUurXqXRcjg3LIEsIxk5ZegNwl2A2m91erf8mtqp8fFhELffoSinnP0NMQjduLDKyefhxs65KG2X4fa3Tx5BDpdOAOGMau3de0R6Z5h2exSzEPoUDKLUPgrkbrv2-UrMy8F8Q83T9oYu_9DgLCgNo0ovyOAsOnteBRnpTpTR3_0bQoLKfK10A"
+        const val TOKEN_ID = "BQDHKLE2iixpRPGEzMkYp6rZOHTikBlxTxmPkR5HOIDkPJdiZnFQrFI_zmqkkErxka-dwN0eYFmSUXNL6jykX9z8jpfTzvvnqaOaLSe1eBfOKLa9qcfRQTGIlH66Q0W6TuKozfCG41pmxA1AJmMgCW0LEd0e9aIFEaOFSyKx2LhI9bn_JHFFer7D3TVuAsPEcqwNqAkRl1cMPQxLKRa9MuXjHZ9saCLOOukSXDWccxByc1BgN_UTpBpTymJDkHDbAEif2OInpn537kpwkKTdaN8nDjj_fsFrpA"
     }
 
     //</editor-fold>

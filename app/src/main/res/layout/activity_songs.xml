@@ -52,7 +52,7 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:scaleType="fitXY"
-                    android:src="@drawable/image_broken" />
+                    android:src="@drawable/musica" />
 
             </androidx.cardview.widget.CardView>
 
