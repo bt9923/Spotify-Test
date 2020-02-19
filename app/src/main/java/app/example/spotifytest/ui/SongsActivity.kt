@@ -2,11 +2,8 @@ package app.example.spotifytest.ui
 
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.example.spotifytest.BuildConfig.USER_ID
 import app.example.spotifytest.R
@@ -16,6 +13,8 @@ import app.example.spotifytest.data.UserTracksFromPlaylist
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_songs.*
 import kotlinx.android.synthetic.main.toolbar.*
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -34,23 +33,39 @@ class SongsActivity : AppCompatActivity() {
             finish()
         }
         // Quitamos elevaciòn para que estè acorde con los tabs
-        // Quitamos elevaciòn para que estè acorde con los tabs
         if (supportActionBar != null) {
             supportActionBar!!.elevation = 0f
         }
         val intent = intent.extras
         Log.d("SongsActiivyt<<", "${intent?.get("playlistID")}")
-        callTracksFromPlayList(intent?.get("playlistID").toString())
+        callTracksFromPlayList(intent?.get("playlistID").toString(),
+            intent?.get("TOKEN_ID").toString())
     }
 
     //</editor-fold>
 
     //<editor-fold desc="API">
 
-    private fun callTracksFromPlayList(playlistID: String?) {
+    private fun callTracksFromPlayList(playlistID: String?, accessToken: String) {
+        val httpClient = OkHttpClient.Builder()
+        httpClient.addInterceptor(object : Interceptor {
+            override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
+                val original = chain.request()
+
+                val request = original.newBuilder()
+                    .header( "Authorization", "Bearer $accessToken")
+                    .method(original.method, original.body)
+                    .build()
+
+                return chain.proceed(request)
+            }
+        })
+        val  client = httpClient.build()
+
         val retrofit = Retrofit.Builder()
             .baseUrl("https://api.spotify.com/v1/")
             .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
             .build()
 
         val userApi = retrofit.create(UserApi::class.java)

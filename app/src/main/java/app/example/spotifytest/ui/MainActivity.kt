@@ -26,6 +26,8 @@ import com.spotify.sdk.android.authentication.AuthenticationClient
 import com.spotify.sdk.android.authentication.AuthenticationRequest
 import com.spotify.sdk.android.authentication.AuthenticationResponse
 import kotlinx.android.synthetic.main.activity_main.*
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -37,6 +39,7 @@ class MainActivity : AppCompatActivity() {
 
     //<editor-fold desc="Vars">
 
+    lateinit var TOKEN_ID : String
     private val REQUEST_CODE = 1337
     private val TAG = "MainActivity"
 //    private val USER_ID = "wizzler"
@@ -51,16 +54,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        textView.setOnClickListener {
-//            val request = getAuthenticationRequest(AuthenticationResponse.Type.TOKEN)
-//            AuthenticationClient.openLoginActivity(
-//                this,
-//                REQUEST_CODE,
-//                request
-//            )
-//        }
 
-        connectedToUser()
+            val request = getAuthenticationRequest(AuthenticationResponse.Type.TOKEN)
+            AuthenticationClient.openLoginActivity(
+                this,
+                REQUEST_CODE,
+                request
+
+            )
+
+//        connectedToUser()
     }
 
     override fun onStart() {
@@ -90,7 +93,6 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(applicationContext, "Be sure to have and log-in in Spotify", Toast.LENGTH_SHORT).show()
                 }
             })
-
 
 //        val builder = AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN,
 //            REDIRECT_URI)
@@ -149,17 +151,6 @@ class MainActivity : AppCompatActivity() {
 //            }
 //
 //        })
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://api.spotify.com/v1/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val userApi = retrofit.create(UserApi::class.java)
-
-        getUserProfileData(userApi)
-
-        getUserPlayList(userApi)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -171,6 +162,34 @@ class MainActivity : AppCompatActivity() {
                 AuthenticationResponse.Type.TOKEN ->{
                     Log.d(TAG, response.accessToken)
 //                    connectedToUser()
+                    TOKEN_ID = response.accessToken
+
+                    val httpClient = OkHttpClient.Builder()
+                    httpClient.addInterceptor(object : Interceptor {
+                        override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
+                            val original = chain.request()
+
+                            val request = original.newBuilder()
+                                .header( "Authorization", "Bearer " + response.accessToken)
+                                .method(original.method, original.body)
+                                .build()
+
+                            return chain.proceed(request)
+                        }
+                    })
+                    val  client = httpClient.build()
+
+                    val retrofit = Retrofit.Builder()
+                        .baseUrl("https://api.spotify.com/v1/")
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .client(client)
+                        .build()
+
+                    val userApi = retrofit.create(UserApi::class.java)
+
+                    getUserProfileData(userApi)
+
+                    getUserPlayList(userApi)
                 }
                 AuthenticationResponse.Type.ERROR ->{
                     Log.d(TAG, resultCode.toString())
@@ -200,7 +219,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun connected() {
         // Play a playlist
-        mSpotifyAppRemote?.playerApi?.play("spotify:playlist:37i9dQZF1DXcBWIGoYBM5M")
+//        mSpotifyAppRemote?.playerApi?.play("spotify:playlist:37i9dQZF1DXcBWIGoYBM5M")
 
 
 //        mSpotifyAppRemote?.playerApi?.pause()
@@ -283,12 +302,14 @@ class MainActivity : AppCompatActivity() {
         val callUserModel = userApi.getUserPlaylist(BuildConfig.USER_ID)
         callUserModel.enqueue( object : Callback<UserPlaylistModel>{
             override fun onFailure(call: Call<UserPlaylistModel>, t: Throwable) {
+                Log.d(TAG, t.toString())
                 somethingWentWrong.visibility = VISIBLE
                 recyclerViewPlaylist.visibility = GONE
                 Toast.makeText(applicationContext, resources.getString(R.string.failed_in_the_server), Toast.LENGTH_LONG).show()
             }
 
             override fun onResponse(call: Call<UserPlaylistModel>, response: Response<UserPlaylistModel>) {
+                Log.d(TAG, "Succesful OnReponse GetUserPlayList")
                 somethingWentWrong.visibility = GONE
                 recyclerViewPlaylist.visibility = VISIBLE
                 recyclerViewPlaylist.layoutManager = LinearLayoutManager(applicationContext)
@@ -303,7 +324,7 @@ class MainActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     when (response.code()) {
                         200 ->{
-                            recyclerViewPlaylist.adapter = PlaylistAdapter(response.body()!!.items, applicationContext)
+                            recyclerViewPlaylist.adapter = PlaylistAdapter(response.body()!!.items, TOKEN_ID, applicationContext)
                             Log.d(TAG, "Successful")
 //                            textView.text = response.body()?.items!![0].name
 //                            followers.text = response.body()?.followers?.total.toString()
@@ -337,9 +358,9 @@ class MainActivity : AppCompatActivity() {
 
     //<editor-fold desc="Constructor">
 
-    companion object {
-        const val TOKEN_ID = "BQDHKLE2iixpRPGEzMkYp6rZOHTikBlxTxmPkR5HOIDkPJdiZnFQrFI_zmqkkErxka-dwN0eYFmSUXNL6jykX9z8jpfTzvvnqaOaLSe1eBfOKLa9qcfRQTGIlH66Q0W6TuKozfCG41pmxA1AJmMgCW0LEd0e9aIFEaOFSyKx2LhI9bn_JHFFer7D3TVuAsPEcqwNqAkRl1cMPQxLKRa9MuXjHZ9saCLOOukSXDWccxByc1BgN_UTpBpTymJDkHDbAEif2OInpn537kpwkKTdaN8nDjj_fsFrpA"
-    }
+//    companion object {
+//        const val TOKEN_ID = "BQCOq0QWt6ooLh7K1m1s6DDcTXVHFCzNQCJYWO1iMfPxMBoKNmvl35cZ1roUBzlcIwPbrtEMHccSjLqMCkup-4FoHqJwr7xLOhbILUccqHvraX0DqAK2QT6Y84Qx3JfSfy4Zvv3aMaDPl5T3PazLfb6w_v3UWLbuRHETYCeJ8MZoIiBA207jOkLSBrGlA2ld021jjXDhAqCpSFfmAwqGBdyaVdCIcKuTpvFEa8uktddp7VzAxUgrgvQZdj0SyMVH1eKy09p5fVHJ__Xj0SoruKWWmMAVoyhTJw"
+//    }
 
     //</editor-fold>
 }

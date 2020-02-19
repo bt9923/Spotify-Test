@@ -15,7 +15,11 @@ import app.example.spotifytest.ui.SongsActivity
 import com.bumptech.glide.Glide
 import java.io.FileNotFoundException
 
-class PlaylistAdapter(val items: List<Item>, val context: Context)
+class PlaylistAdapter(
+    val items: List<Item>,
+    val TOKEN_ID: String,
+    val context: Context
+)
     : RecyclerView.Adapter<PlaylistAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -29,6 +33,7 @@ class PlaylistAdapter(val items: List<Item>, val context: Context)
             val intent = Intent(context, SongsActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK;
             intent.putExtra("playlistID", items[position].id)
+            intent.putExtra("TOKEN_ID", TOKEN_ID)
             context.startActivity(intent)
         }
     }
