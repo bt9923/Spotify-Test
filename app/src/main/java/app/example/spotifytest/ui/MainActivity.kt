@@ -55,6 +55,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 
+        imgUploadPhoto.setOnClickListener{
             val request = getAuthenticationRequest(AuthenticationResponse.Type.TOKEN)
             AuthenticationClient.openLoginActivity(
                 this,
@@ -62,7 +63,7 @@ class MainActivity : AppCompatActivity() {
                 request
 
             )
-
+        }
 //        connectedToUser()
     }
 
@@ -237,9 +238,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun getAuthenticationRequest(type: AuthenticationResponse.Type): AuthenticationRequest {
         return AuthenticationRequest.Builder(
-            BuildConfig.CLIENT_ID,
+            CLIENT_ID,
             type,
-            BuildConfig.REDIRECT_URI
+            REDIRECT_URI
         )
             .setShowDialog(false)
             .setScopes(arrayOf("user-read-email"))
