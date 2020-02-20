@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import app.example.spotifytest.R
 import app.example.spotifytest.data.ItemTrack
@@ -16,8 +17,14 @@ import app.example.spotifytest.ui.Tracks.Player.PlayerActivity
 import com.bumptech.glide.Glide
 import java.io.FileNotFoundException
 
-class TracksFromPlaylists(val items: UserTracksFromPlaylist?, val context: Context)
-    : RecyclerView.Adapter<TracksFromPlaylists.MyViewHolder>() {
+class TracksFromPlaylistAdapter(val context: Context)
+    : RecyclerView.Adapter<TracksFromPlaylistAdapter.MyViewHolder>() {
+
+    private var dataList : UserTracksFromPlaylist? = UserTracksFromPlaylist()
+
+    fun setListData(tracks : UserTracksFromPlaylist){
+        dataList = tracks
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         return MyViewHolder(
@@ -26,7 +33,7 @@ class TracksFromPlaylists(val items: UserTracksFromPlaylist?, val context: Conte
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(items!!.tracks.items[position])
+        holder.bind(dataList!!.tracks!!.items[position])
 //        holder.imagePlaylist.setOnClickListener{
 //            Toast.makeText(context, "ONCLICKITEM", Toast.LENGTH_SHORT).show()
 //            val intent = Intent(context, SongsActivity::class.java)
@@ -36,7 +43,11 @@ class TracksFromPlaylists(val items: UserTracksFromPlaylist?, val context: Conte
     }
 
     override fun getItemCount(): Int {
-        return items!!.tracks.total
+        return if (dataList!!.tracks == null){
+            0
+        }else{
+            dataList!!.tracks!!.total
+        }
     }
 
     class MyViewHolder(view: View, val context: Context) : RecyclerView.ViewHolder(view), View.OnClickListener{

@@ -2,7 +2,7 @@ package app.example.spotifytest.data
 
 data class UserPlaylistModel(
     val href: String,
-    val items: List<Item>,
+    val items: MutableList<Item>,
     val limit: Int,
     val next: Any,
     val offset: Int,

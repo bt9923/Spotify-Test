@@ -3,20 +3,24 @@ package app.example.spotifytest.data
 data class UserTracksFromPlaylist(
     val collaborative: Boolean,
     val description: String,
-    val external_urls: ExternalUrls,
-    val followers: Followers,
+    val external_urls: ExternalUrls?,
+    val followers: Followers?,
     val href: String,
     val id: String,
-    val images: List<Image>,
+    val images: List<Image>?,
     val name: String,
-    val owner: Owner,
-    val primary_color: Any,
-    val `public`: Boolean,
+    val owner: Owner?,
+    val primary_color: Any?,
+    val public: Boolean,
     val snapshot_id: String,
-    val tracks: TracksItem,
+    val tracks: TracksItem?,
     val type: String,
     val uri: String
-)
+){
+    constructor() : this(false, ""
+    , null, null, "", "", null, ""
+    , null, null, false, "", null, "", "")
+}
 
 //data class ExternalUrls(
 //    val spotify: String

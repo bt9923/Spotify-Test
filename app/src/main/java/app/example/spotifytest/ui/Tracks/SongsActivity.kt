@@ -2,26 +2,27 @@ package app.example.spotifytest.ui.Tracks
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import app.example.spotifytest.BuildConfig.USER_ID
 import app.example.spotifytest.R
-import app.example.spotifytest.adapter.TracksFromPlaylists
-import app.example.spotifytest.api.UserApi
-import app.example.spotifytest.data.UserTracksFromPlaylist
+import app.example.spotifytest.adapter.TracksFromPlaylistAdapter
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_songs.*
 import kotlinx.android.synthetic.main.toolbar.*
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class SongsActivity : AppCompatActivity() {
+
+    //<editor-fold desc="Life Cycle">
+
+    private lateinit var adapter: TracksFromPlaylistAdapter
+
+    private val viewModel by lazy {
+        ViewModelProvider(this).get(SongsViewModel::class.java)
+    }
+
+    //</editor-fold>
 
     //<editor-fold desc="Life Cycle">
 
@@ -32,67 +33,35 @@ class SongsActivity : AppCompatActivity() {
         imageViewToolbar.setOnClickListener {
             finish()
         }
+
+        recyclerViewTracks.layoutManager  = LinearLayoutManager(applicationContext)
+        adapter = TracksFromPlaylistAdapter(applicationContext)
+        recyclerViewTracks.adapter = adapter
+
         if (supportActionBar != null) {
             supportActionBar!!.elevation = 0f
         }
         val intent = intent.extras
-        Log.d("SongsActiivyt<<", "${intent?.get("playlistID")}")
-        callTracksFromPlayList(intent?.get("playlistID").toString(),
-            intent?.get("TOKEN_ID").toString())
+        observeData(intent?.get("TOKEN_ID").toString(), intent?.get("playlistID").toString())
+//        callTracksFromPlayList(intent?.get("playlistID").toString(),
+//            intent?.get("TOKEN_ID").toString())
     }
 
     //</editor-fold>
 
     //<editor-fold desc="API">
 
-    private fun callTracksFromPlayList(playlistID: String?, accessToken: String) {
-        val httpClient = OkHttpClient.Builder()
-        httpClient.addInterceptor(object : Interceptor {
-            override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
-                val original = chain.request()
+    private fun observeData(accessToken: String, playlistID: String) {
 
-                val request = original.newBuilder()
-                    .header( "Authorization", "Bearer $accessToken")
-                    .method(original.method, original.body)
-                    .build()
+        viewModel.fetchUserData(accessToken, playlistID).observe(this, Observer {
+            Glide.with(applicationContext).load(it.images!![0].url)
+                .error(R.drawable.image_broken).into(imagePlaylistFromTracks)
 
-                return chain.proceed(request)
-            }
-        })
-        val  client = httpClient.build()
+            namePlaylist.text = it.name
+            descriptionPlaylist.text = "${it.followers?.total} Followers"
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://api.spotify.com/v1/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(client)
-            .build()
-
-        val userApi = retrofit.create(UserApi::class.java)
-
-        val callUserModel = userApi.getUserTracksFromPlaylist(USER_ID, playlistID!!)
-
-        recyclerViewTracks.layoutManager  = LinearLayoutManager(applicationContext)
-        callUserModel.enqueue(object  : Callback<UserTracksFromPlaylist>{
-            override fun onFailure(call: Call<UserTracksFromPlaylist>, t: Throwable) {
-                Log.d("SongActivity", "$t")
-                Toast.makeText(applicationContext, resources.getString(R.string.failed_in_the_server), Toast.LENGTH_LONG).show()
-            }
-
-            override fun onResponse(
-                call: Call<UserTracksFromPlaylist>,
-                response: Response<UserTracksFromPlaylist>
-            ) {
-                if (response.body()!!.images.isNotEmpty()){
-                    Glide.with(applicationContext).load(response.body()!!.images[0].url)
-                        .error(R.drawable.image_broken).into(imagePlaylistFromTracks)
-                }
-
-                namePlaylist.text = response.body()!!.name
-                descriptionPlaylist.text = "${response.body()!!.followers.total} Followers"
-
-
-                recyclerViewTracks.adapter = TracksFromPlaylists(response.body()!!, applicationContext)
-            }
+            adapter.setListData(it)
+            adapter.notifyDataSetChanged()
         })
     }
 

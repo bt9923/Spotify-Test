@@ -16,7 +16,7 @@ data class ExternalUrls(
 )
 
 data class Followers(
-    val href: Any,
+    val href: String,
     val total: Int
 )
 

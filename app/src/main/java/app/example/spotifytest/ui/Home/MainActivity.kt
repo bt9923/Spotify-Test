@@ -8,6 +8,8 @@ import android.view.View.VISIBLE
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.example.spotifytest.BuildConfig
@@ -44,6 +46,11 @@ class MainActivity : AppCompatActivity() {
     private val TAG = "MainActivity"
 //    private val USER_ID = "wizzler"
     private var mSpotifyAppRemote: SpotifyAppRemote? = null
+    private lateinit var adapter: PlaylistAdapter
+
+    private val viewModel by lazy {
+        ViewModelProvider(this).get(MainViewModel::class.java)
+    }
 
     //</editor-fold>
 
@@ -61,9 +68,17 @@ class MainActivity : AppCompatActivity() {
                 this,
                 REQUEST_CODE,
                 request
-
             )
         }
+
+        recyclerViewPlaylist.layoutManager = LinearLayoutManager(applicationContext)
+        recyclerViewPlaylist.setHasFixedSize(true)
+
+        val itemDecoration = DividerItemDecoration(applicationContext, DividerItemDecoration.VERTICAL)
+        itemDecoration.setDrawable(ContextCompat.getDrawable(applicationContext,
+            R.drawable.item_decorator
+        )!!)
+        recyclerViewPlaylist.addItemDecoration(itemDecoration)
 //        connectedToUser()
     }
 
@@ -94,14 +109,6 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(applicationContext, "Be sure to have and log-in in Spotify", Toast.LENGTH_SHORT).show()
                 }
             })
-
-//        val builder = AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN,
-//            REDIRECT_URI)
-
-
-//        builder.setScopes(arrayOf("streaming"))
-//        val request = builder.build()
-//        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request)
     }
 
     private fun connectedToUser() {
@@ -165,32 +172,9 @@ class MainActivity : AppCompatActivity() {
 //                    connectedToUser()
                     TOKEN_ID = response.accessToken
 
-                    val httpClient = OkHttpClient.Builder()
-                    httpClient.addInterceptor(object : Interceptor {
-                        override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
-                            val original = chain.request()
-
-                            val request = original.newBuilder()
-                                .header( "Authorization", "Bearer " + response.accessToken)
-                                .method(original.method, original.body)
-                                .build()
-
-                            return chain.proceed(request)
-                        }
-                    })
-                    val  client = httpClient.build()
-
-                    val retrofit = Retrofit.Builder()
-                        .baseUrl("https://api.spotify.com/v1/")
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .client(client)
-                        .build()
-
-                    val userApi = retrofit.create(UserApi::class.java)
-
-                    getUserProfileData(userApi)
-
-                    getUserPlayList(userApi)
+                    adapter = PlaylistAdapter(TOKEN_ID, applicationContext)
+                    recyclerViewPlaylist.adapter = adapter
+                    observeData()
                 }
                 AuthenticationResponse.Type.ERROR ->{
                     Log.d(TAG, resultCode.toString())
@@ -251,107 +235,22 @@ class MainActivity : AppCompatActivity() {
 
     //<editor-fold desc="API">
 
-    private fun getUserProfileData(userApi: UserApi) {
-        val callUserModel = userApi.getUserData(BuildConfig.USER_ID)
-        callUserModel.enqueue( object : Callback<UserModel>{
-            override fun onFailure(call: Call<UserModel>, t: Throwable) {
-                Log.d(TAG, "OnFailure $t")
-                somethingWentWrong.visibility = VISIBLE
-                recyclerViewPlaylist.visibility = GONE
-                Toast.makeText(applicationContext, resources.getString(R.string.failed_in_the_server), Toast.LENGTH_LONG).show()
-            }
+    fun observeData(){
+        viewModel.fetchUserData(TOKEN_ID).observe(this, Observer {
+            textViewName.text = it.display_name
+            textViewFollowers.text = it.followers.total.toString()
 
-            override fun onResponse(call: Call<UserModel>, response: Response<UserModel>) {
-                if (response.isSuccessful) {
-                    when (response.code()) {
-                        200 ->{
-                            Log.d(TAG, "Successful")
-                            textViewName.text = response.body()?.display_name
-                            textViewFollowers.text = response.body()?.followers?.total.toString()
-
-                            if (response.body()?.images?.isNotEmpty()!!)
-                                Glide.with(applicationContext)
-                                    .load(response.body()?.images!![0].url)
-                                    .into(imgUploadPhoto)
-//                            Log.d("MAINACTIVITY.COM XDDDDD", response.body()?.)
-                        }
-                        401 -> {
-                            Log.d(TAG, "Unauthorized")
-                            somethingWentWrong.visibility = VISIBLE
-                            recyclerViewPlaylist.visibility = GONE
-                            Toast.makeText(applicationContext, "The request requires user authentication", Toast.LENGTH_SHORT).show()
-                        }
-                        403 ->{
-                            Log.d(TAG, "Forbidden")
-                            somethingWentWrong.visibility = VISIBLE
-                            recyclerViewPlaylist.visibility = GONE
-                            Toast.makeText(applicationContext, resources.getString(
-                                R.string.failed_in_the_server
-                            ), Toast.LENGTH_LONG).show()
-                        }
-                    }
-                }else{
-                    somethingWentWrong.visibility = VISIBLE
-                    recyclerViewPlaylist.visibility = GONE
-                    Toast.makeText(applicationContext, resources.getString(R.string.failed_in_the_server), Toast.LENGTH_LONG).show()
-                }
-            }
+            if (it.images.isNotEmpty())
+                Glide.with(applicationContext)
+                    .load(it.images[0].url)
+                    .into(imgUploadPhoto)
         })
-    }
 
-    private fun getUserPlayList(userApi: UserApi) {
-        val callUserModel = userApi.getUserPlaylist(BuildConfig.USER_ID)
-        callUserModel.enqueue( object : Callback<UserPlaylistModel>{
-            override fun onFailure(call: Call<UserPlaylistModel>, t: Throwable) {
-                Log.d(TAG, t.toString())
-                somethingWentWrong.visibility = VISIBLE
-                recyclerViewPlaylist.visibility = GONE
-                Toast.makeText(applicationContext, resources.getString(R.string.failed_in_the_server), Toast.LENGTH_LONG).show()
-            }
-
-            override fun onResponse(call: Call<UserPlaylistModel>, response: Response<UserPlaylistModel>) {
-                Log.d(TAG, "Succesful OnReponse GetUserPlayList")
-                somethingWentWrong.visibility = GONE
-                recyclerViewPlaylist.visibility = VISIBLE
-                recyclerViewPlaylist.layoutManager = LinearLayoutManager(applicationContext)
-                recyclerViewPlaylist.setHasFixedSize(true)
-                val itemDecoration = DividerItemDecoration(applicationContext, DividerItemDecoration.VERTICAL)
-                itemDecoration.setDrawable(ContextCompat.getDrawable(applicationContext,
-                    R.drawable.item_decorator
-                )!!)
-
-                recyclerViewPlaylist.addItemDecoration(itemDecoration)
-
-                if (response.isSuccessful) {
-                    when (response.code()) {
-                        200 ->{
-                            recyclerViewPlaylist.adapter = PlaylistAdapter(response.body()!!.items, TOKEN_ID, applicationContext)
-                            Log.d(TAG, "Successful")
-//                            textView.text = response.body()?.items!![0].name
-//                            followers.text = response.body()?.followers?.total.toString()
-                        }
-                        401 -> {
-                            Log.d(TAG, "Unauthorized")
-                            somethingWentWrong.visibility = VISIBLE
-                            recyclerViewPlaylist.visibility = GONE
-                            Toast.makeText(applicationContext, "The request requires user authentication", Toast.LENGTH_SHORT).show()
-                        }
-                        403 ->{
-                            Log.d(TAG, "Forbidden")
-                            somethingWentWrong.visibility = VISIBLE
-                            recyclerViewPlaylist.visibility = GONE
-                            Toast.makeText(applicationContext, resources.getString(
-                                R.string.failed_in_the_server
-                            ), Toast.LENGTH_LONG).show()
-                        }
-                    }
-                }else{
-                    Log.d(TAG, "$response")
-                    somethingWentWrong.visibility = VISIBLE
-                    recyclerViewPlaylist.visibility = GONE
-                    Toast.makeText(applicationContext, resources.getString(R.string.failed_in_the_server), Toast.LENGTH_LONG).show()
-                }
-            }
+        viewModel.fetchGetPlayList(TOKEN_ID).observe(this, Observer {
+            somethingWentWrong.visibility = GONE
+            recyclerViewPlaylist.visibility = VISIBLE
+            adapter.setListData(it.items)
+            adapter.notifyDataSetChanged()
         })
     }
 
