@@ -11,7 +11,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import app.example.spotifytest.R
 import app.example.spotifytest.data.Item
-import app.example.spotifytest.ui.SongsActivity
+import app.example.spotifytest.ui.Tracks.SongsActivity
 import com.bumptech.glide.Glide
 import java.io.FileNotFoundException
 

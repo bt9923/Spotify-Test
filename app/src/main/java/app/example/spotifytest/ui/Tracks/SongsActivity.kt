@@ -1,4 +1,4 @@
-package app.example.spotifytest.ui
+package app.example.spotifytest.ui.Tracks
 
 import android.os.Bundle
 import android.util.Log
@@ -32,7 +32,6 @@ class SongsActivity : AppCompatActivity() {
         imageViewToolbar.setOnClickListener {
             finish()
         }
-        // Quitamos elevaciòn para que estè acorde con los tabs
         if (supportActionBar != null) {
             supportActionBar!!.elevation = 0f
         }

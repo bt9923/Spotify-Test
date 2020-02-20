@@ -1,6 +1,7 @@
 package app.example.spotifytest.adapter
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import app.example.spotifytest.R
 import app.example.spotifytest.data.ItemTrack
 import app.example.spotifytest.data.UserTracksFromPlaylist
+import app.example.spotifytest.ui.Tracks.Player.PlayerActivity
 import com.bumptech.glide.Glide
 import java.io.FileNotFoundException
 
@@ -39,6 +41,9 @@ class TracksFromPlaylists(val items: UserTracksFromPlaylist?, val context: Conte
 
     class MyViewHolder(view: View, val context: Context) : RecyclerView.ViewHolder(view), View.OnClickListener{
         override fun onClick(v: View?) {
+            val intent = Intent(context, PlayerActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            context.startActivity(intent)
             Toast.makeText(context, "Coming Soon", Toast.LENGTH_SHORT).show()
         }
 

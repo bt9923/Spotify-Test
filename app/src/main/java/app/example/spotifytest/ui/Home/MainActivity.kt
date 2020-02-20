@@ -1,4 +1,4 @@
-package app.example.spotifytest.ui
+package app.example.spotifytest.ui.Home
 
 import android.content.Intent
 import android.os.Bundle
@@ -255,7 +255,7 @@ class MainActivity : AppCompatActivity() {
         val callUserModel = userApi.getUserData(BuildConfig.USER_ID)
         callUserModel.enqueue( object : Callback<UserModel>{
             override fun onFailure(call: Call<UserModel>, t: Throwable) {
-                Log.d(TAG, "<<>>> $t")
+                Log.d(TAG, "OnFailure $t")
                 somethingWentWrong.visibility = VISIBLE
                 recyclerViewPlaylist.visibility = GONE
                 Toast.makeText(applicationContext, resources.getString(R.string.failed_in_the_server), Toast.LENGTH_LONG).show()

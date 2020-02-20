@@ -11,8 +11,10 @@
         android:roundIcon="@mipmap/ic_spotify"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.SongsActivity"></activity>
-        <activity android:name=".ui.MainActivity"
+        <activity android:name=".ui.Tracks.Player.PlayerActivity"></activity>
+        <activity android:name=".ui.Tracks.SongsActivity" />
+        <activity
+            android:name=".ui.Home.MainActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
