@@ -50,7 +50,7 @@ class TracksFromPlaylistAdapter(val context: Context)
         }
     }
 
-    class MyViewHolder(view: View, val context: Context) : RecyclerView.ViewHolder(view), View.OnClickListener{
+    class MyViewHolder(view: View, private val context: Context) : RecyclerView.ViewHolder(view), View.OnClickListener{
         override fun onClick(v: View?) {
             val intent = Intent(context, PlayerActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
