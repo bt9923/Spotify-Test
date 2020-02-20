@@ -84,19 +84,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_begin="132dp" />
+            app:layout_constraintGuide_percent="0.2218845" />
 
         <TextView
             android:id="@+id/textViewNowPlaying"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:fontFamily="@font/montserrat_semibold"
             android:text="@string/playlist"
             android:textColor="@android:color/white"
             android:textSize="@dimen/title_size"
+            app:layout_constraintBottom_toTopOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="@+id/guideline16"
             app:layout_constraintTop_toTopOf="@+id/guideline19"
+            app:layout_constraintVertical_bias="0.698"
             tools:targetApi="jelly_bean" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -188,14 +189,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.98" />
+            app:layout_constraintGuide_percent="0.96" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.29138166" />
+            app:layout_constraintGuide_begin="176dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -205,11 +206,11 @@
         android:layout_height="0dp"
         android:background="@color/colorSecondary"
         android:orientation="horizontal"
-        android:padding="@dimen/margin_medium"
+        android:padding="@dimen/corner_radius"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.1"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constrainContainer">
 
         <ImageView
             android:layout_width="0dp"
