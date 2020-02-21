@@ -5,9 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import app.example.spotifytest.BuildConfig.USER_ID
 import app.example.spotifytest.api.UserApi
-import app.example.spotifytest.data.UserModel
-import app.example.spotifytest.data.UserPlaylistModel
-import app.example.spotifytest.data.UserTracksFromPlaylist
+import app.example.spotifytest.data.user.UserModel
+import app.example.spotifytest.data.playlist.UserPlaylistModel
+import app.example.spotifytest.data.playlist.UserTracksFromPlaylist
+import app.example.spotifytest.data.track.TrackModel
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Call
@@ -185,6 +186,24 @@ class Repo(accessToken: String) {
                 call: Call<UserTracksFromPlaylist>,
                 response: Response<UserTracksFromPlaylist>) {
                 mutableData.value = response.body()
+            }
+        })
+
+        return mutableData
+    }
+
+    fun getTrackByID(trackID: String) : LiveData<TrackModel>{
+        val mutableData = MutableLiveData<TrackModel>()
+
+        val callUserModel = userApi.getTrackByID(trackID)
+
+        callUserModel.enqueue(object : Callback<TrackModel>{
+            override fun onFailure(call: Call<TrackModel>, t: Throwable) {
+                Log.d("REPO getTrackByID", t.toString())
+            }
+
+            override fun onResponse(call: Call<TrackModel>, response: Response<TrackModel>) {
+               mutableData.value = response.body()
             }
         })
 

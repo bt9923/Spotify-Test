@@ -12,14 +12,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import app.example.spotifytest.BuildConfig
 import app.example.spotifytest.BuildConfig.CLIENT_ID
 import app.example.spotifytest.BuildConfig.REDIRECT_URI
 import app.example.spotifytest.R
 import app.example.spotifytest.adapter.PlaylistAdapter
-import app.example.spotifytest.api.UserApi
-import app.example.spotifytest.data.UserModel
-import app.example.spotifytest.data.UserPlaylistModel
 import com.bumptech.glide.Glide
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector
@@ -28,13 +24,6 @@ import com.spotify.sdk.android.authentication.AuthenticationClient
 import com.spotify.sdk.android.authentication.AuthenticationRequest
 import com.spotify.sdk.android.authentication.AuthenticationResponse
 import kotlinx.android.synthetic.main.activity_main.*
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 
 class MainActivity : AppCompatActivity() {
@@ -82,34 +71,34 @@ class MainActivity : AppCompatActivity() {
 //        connectedToUser()
     }
 
-    override fun onStart() {
-        super.onStart()
-
-        val connectionParams = ConnectionParams.Builder(CLIENT_ID)
-            .setRedirectUri(REDIRECT_URI)
-            .showAuthView(true)
-            .build()
-
-        SpotifyAppRemote.connect(this, connectionParams,
-            object : Connector.ConnectionListener {
-
-                override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
-                    mSpotifyAppRemote = spotifyAppRemote
-                    Log.d("MainActivity", "Connected! Yay!" )
-
-                    // Now you can start interacting with App Remote
-                    connected()
-
-                }
-
-                override fun onFailure(throwable: Throwable) {
-                    Log.e("MainActivity", throwable.message, throwable)
-                    // Something went wrong when attempting to connect! Handle errors here
-
-                    Toast.makeText(applicationContext, "Be sure to have and log-in in Spotify", Toast.LENGTH_SHORT).show()
-                }
-            })
-    }
+//    override fun onStart() {
+//        super.onStart()
+//
+//        val connectionParams = ConnectionParams.Builder(CLIENT_ID)
+//            .setRedirectUri(REDIRECT_URI)
+//            .showAuthView(true)
+//            .build()
+//
+//        SpotifyAppRemote.connect(this, connectionParams,
+//            object : Connector.ConnectionListener {
+//
+//                override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
+//                    mSpotifyAppRemote = spotifyAppRemote
+//                    Log.d("MainActivity", "Connected! Yay!" )
+//
+//                    // Now you can start interacting with App Remote
+//                    connected()
+//
+//                }
+//
+//                override fun onFailure(throwable: Throwable) {
+//                    Log.e("MainActivity", throwable.message, throwable)
+//                    // Something went wrong when attempting to connect! Handle errors here
+//
+//                    Toast.makeText(applicationContext, "Be sure to have and log-in in Spotify", Toast.LENGTH_SHORT).show()
+//                }
+//            })
+//    }
 
     private fun connectedToUser() {
 
@@ -202,23 +191,23 @@ class MainActivity : AppCompatActivity() {
 
     //<editor-fold desc="Connected">
 
-    private fun connected() {
-        // Play a playlist
+//    private fun connected() {
+//        // Play a playlist
 //        mSpotifyAppRemote?.playerApi?.play("spotify:playlist:37i9dQZF1DXcBWIGoYBM5M")
-
-
-//        mSpotifyAppRemote?.playerApi?.pause()
-        // Subscribe to PlayerState
-        mSpotifyAppRemote?.playerApi?.
-            subscribeToPlayerState()?.
-            setEventCallback { playerState ->
-                val track = playerState.track
-                if (track != null) {
-                    Toast.makeText(applicationContext, "You are listening ${track.name}", Toast.LENGTH_SHORT).show()
-                    Log.d("MainActivity", track.name + " by " + track.artist.name)
-                }
-            }
-    }
+//
+//
+////        mSpotifyAppRemote?.playerApi?.pause()
+//        // Subscribe to PlayerState
+//        mSpotifyAppRemote?.playerApi?.
+//            subscribeToPlayerState()?.
+//            setEventCallback { playerState ->
+//                val track = playerState.track
+//                if (track != null) {
+//                    Toast.makeText(applicationContext, "You are listening ${track.name}", Toast.LENGTH_SHORT).show()
+//                    Log.d("MainActivity", track.name + " by " + track.artist.name)
+//                }
+//            }
+//    }
 
     private fun getAuthenticationRequest(type: AuthenticationResponse.Type): AuthenticationRequest {
         return AuthenticationRequest.Builder(

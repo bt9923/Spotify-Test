@@ -10,8 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import app.example.spotifytest.R
-import app.example.spotifytest.data.Item
-import app.example.spotifytest.data.UserModel
+import app.example.spotifytest.data.playlist.Item
 import app.example.spotifytest.ui.Tracks.SongsActivity
 import com.bumptech.glide.Glide
 import java.io.FileNotFoundException

@@ -1,7 +1,6 @@
 package app.example.spotifytest.ui.Tracks
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -14,7 +13,7 @@ import kotlinx.android.synthetic.main.toolbar.*
 
 class SongsActivity : AppCompatActivity() {
 
-    //<editor-fold desc="Life Cycle">
+    //<editor-fold desc="Vars">
 
     private lateinit var adapter: TracksFromPlaylistAdapter
 
@@ -60,7 +59,7 @@ class SongsActivity : AppCompatActivity() {
             namePlaylist.text = it.name
             descriptionPlaylist.text = "${it.followers?.total} Followers"
 
-            adapter.setListData(it)
+            adapter.setListData(it, accessToken)
             adapter.notifyDataSetChanged()
         })
     }

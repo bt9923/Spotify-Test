@@ -15,7 +15,8 @@
         <activity android:name=".ui.Tracks.SongsActivity" />
         <activity
             android:name=".ui.Home.MainActivity"
-            android:theme="@style/SplashTheme">
+            android:theme="@style/SplashTheme"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
