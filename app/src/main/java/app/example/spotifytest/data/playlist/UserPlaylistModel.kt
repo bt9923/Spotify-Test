@@ -1,8 +1,11 @@
-package app.example.spotifytest.data
+package app.example.spotifytest.data.playlist
+
+import app.example.spotifytest.data.user.ExternalUrls
+import app.example.spotifytest.data.user.Image
 
 data class UserPlaylistModel(
     val href: String,
-    val items: List<Item>,
+    val items: MutableList<Item>,
     val limit: Int,
     val next: Any,
     val offset: Int,

@@ -1,4 +1,4 @@
-package app.example.spotifytest.data
+package app.example.spotifytest.data.user
 
 data class UserModel(
     val display_name: String,
@@ -16,7 +16,7 @@ data class ExternalUrls(
 )
 
 data class Followers(
-    val href: Any,
+    val href: String,
     val total: Int
 )
 

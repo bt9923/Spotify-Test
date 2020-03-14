@@ -2,6 +2,7 @@
 <resources>
     <dimen name="title_xsize">32sp</dimen>
     <dimen name="title_size">22sp</dimen>
+    <dimen name="title_msize">26sp</dimen>
     <dimen name="name_home">25sp</dimen>
     <dimen name="margin_medium">12dp</dimen>
     <dimen name="corner_radius">8dp</dimen>
