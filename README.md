@@ -1,4 +1,7 @@
 # Spotify-Test
+
+<img src="https://github.com/bt9923/Spotify-Test/blob/develop/app/src/main/res/drawable/screenshot_failed.png" width=100 >
+
 ![image](https://github.com/bt9923/Spotify-Test/blob/develop/app/src/main/res/drawable/screenshot_failed.png)
 
 Show the playlist created by the user
